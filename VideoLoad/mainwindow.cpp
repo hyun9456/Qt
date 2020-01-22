@@ -8,7 +8,6 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    player = nullptr;
 }
 
 MainWindow::~MainWindow()
@@ -21,9 +20,7 @@ void MainWindow::on_pushButton_load_clicked()
 {
     file_path = QFileDialog::getOpenFileName();
 
-    if(player != nullptr) delete player;
-
-    player = new QMediaPlayer;
+    player.reset(new QMediaPlayer);
     player->setVideoOutput(ui->vw);
     player->setMedia(QUrl::fromLocalFile(file_path));
 

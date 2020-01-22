@@ -24,6 +24,6 @@ private slots:
 private:
     Ui::MainWindow *ui;
     QString file_path;
-    QMediaPlayer* player;
+    QSharedPointer<QMediaPlayer> player;
 };
 #endif // MAINWINDOW_H
