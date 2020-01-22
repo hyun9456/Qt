@@ -8,11 +8,13 @@ class TcpServerSocket
 {
 public:
     TcpServerSocket();
+    void run();
+    void sendData(int data);
+    void stop();
+    QString readyData();
 private slots:
     void newConnection();
     void socketStateChanged(QAbstractSocket::SocketState socketState);
-    void readyData();
-    void sendData(int data);
 private:
     QTcpServer  server;
     QList<QSharedPointer<QTcpSocket>>  sockets;
