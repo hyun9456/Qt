@@ -3,6 +3,8 @@
 
 #include <QMainWindow>
 
+#include <QMediaPlayer>
+
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -15,8 +17,16 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+    int counter = 0;
+
+private slots:
+    void on_pushButton_clicked();
+    void drawImage(QImage image);
+    void calcAvgRgb(QImage image);
 
 private:
     Ui::MainWindow *ui;
+    QSharedPointer<QMediaPlayer> player;
+    QImage frameImage;
 };
 #endif // MAINWINDOW_H
