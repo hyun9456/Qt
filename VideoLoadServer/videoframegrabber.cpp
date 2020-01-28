@@ -3,8 +3,8 @@
 
 VideoFrameGrabber::VideoFrameGrabber(QWidget *widget, QObject *parent)
     : QAbstractVideoSurface(parent)
-    , widget(widget)
-    , imageFormat(QImage::Format_Invalid)
+    , m_widget(widget)
+    , m_imageFormat(QImage::Format_Invalid)
 {
 }
 
@@ -62,13 +62,13 @@ bool VideoFrameGrabber::start(const QVideoSurfaceFormat &format)
     const QSize size = format.frameSize();
 
     if (imageFormat != QImage::Format_Invalid && !size.isEmpty()) {
-        this->imageFormat = imageFormat;
-        imageSize = size;
-        sourceRect = format.viewport();
+        this->m_imageFormat = imageFormat;
+        m_imageSize = size;
+        m_sourceRect = format.viewport();
 
         QAbstractVideoSurface::start(format);
 
-        widget->updateGeometry();
+        m_widget->updateGeometry();
         updateVideoRect();
 
         return true;
@@ -79,12 +79,12 @@ bool VideoFrameGrabber::start(const QVideoSurfaceFormat &format)
 
 void VideoFrameGrabber::stop()
 {
-    currentFrame = QVideoFrame();
-    targetRect = QRect();
+    m_currentFrame = QVideoFrame();
+    m_targetRect = QRect();
 
     QAbstractVideoSurface::stop();
 
-    widget->update();
+    m_widget->update();
 }
 
 bool VideoFrameGrabber::present(const QVideoFrame &frame)
@@ -108,9 +108,9 @@ bool VideoFrameGrabber::present(const QVideoFrame &frame)
 
         return false;
     } else {
-        currentFrame = frame;
+        m_currentFrame = frame;
 
-        widget->repaint(targetRect);
+        m_widget->repaint(m_targetRect);
 
         return true;
     }
@@ -119,33 +119,59 @@ bool VideoFrameGrabber::present(const QVideoFrame &frame)
 void VideoFrameGrabber::updateVideoRect()
 {
     QSize size = surfaceFormat().sizeHint();
-    size.scale(widget->size().boundedTo(size), Qt::KeepAspectRatio);
+    size.scale(m_widget->size().boundedTo(size), Qt::KeepAspectRatio);
 
-    targetRect = QRect(QPoint(0, 0), size);
-    targetRect.moveCenter(widget->rect().center());
+    m_targetRect = QRect(QPoint(0, 0), size);
+    m_targetRect.moveCenter(m_widget->rect().center());
 }
 
 void VideoFrameGrabber::paint(QPainter *painter)
 {
-    if (currentFrame.map(QAbstractVideoBuffer::ReadOnly)) {
+    if (m_currentFrame.map(QAbstractVideoBuffer::ReadOnly)) {
         const QTransform oldTransform = painter->transform();
 
         if (surfaceFormat().scanLineDirection() == QVideoSurfaceFormat::BottomToTop) {
            painter->scale(1, -1);
-           painter->translate(0, -widget->height());
+           painter->translate(0, -m_widget->height());
         }
 
         QImage image(
-                currentFrame.bits(),
-                currentFrame.width(),
-                currentFrame.height(),
-                currentFrame.bytesPerLine(),
-                imageFormat);
+                m_currentFrame.bits(),
+                m_currentFrame.width(),
+                m_currentFrame.height(),
+                m_currentFrame.bytesPerLine(),
+                m_imageFormat);
 
-        painter->drawImage(targetRect, image, sourceRect);
+        painter->drawImage(m_targetRect, image, m_sourceRect);
 
         painter->setTransform(oldTransform);
 
-        currentFrame.unmap();
+        m_currentFrame.unmap();
     }
+}
+
+void VideoFrameGrabber::calcAvgRgb(QImage frame)
+{
+    double avgRed = 0;
+    double avgGreen = 0;
+    double avgBlue = 0;
+
+    for(int w = 0; w < frame.width(); w++) {
+        for(int h = 0; h< frame.height(); h++) {
+            QRgb rgb = frame.pixel(w,h);
+            avgRed += qRed(rgb);
+            avgGreen += qGreen(rgb);
+            avgBlue += qBlue(rgb);
+        }
+    }
+    int size = frame.width() * frame.height();
+
+    avgRed /= size;
+    avgGreen /= size;
+    avgBlue /= size;
+
+    QByteArray avgRgb("(" + QByteArray::number(avgRed) + ", "+ QByteArray::number(avgGreen) + ", "+ QByteArray::number(avgBlue) + ")");
+
+    qDebug() << avgRgb;
+    emit avgRgbAvailable(avgRgb);
 }

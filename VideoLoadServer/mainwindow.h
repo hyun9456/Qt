@@ -5,7 +5,7 @@
 
 #include <QMediaPlayer>
 #include "tcpserversocket.h"
-
+#include "videoframegrabber.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -18,21 +18,18 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
-    int counter = 0;
 
 private slots:
     void on_pushButton_clicked();
-    void drawImage(QImage image);
-    void calcAvgRgb(QImage image);
-
     void on_pushButton_run_clicked();
-
     void on_pushButton_stop_clicked();
+    void paintEvent(QPaintEvent * event);
+    void sendAvgRgb(QByteArray avgRgb);
 
 private:
     Ui::MainWindow *ui;
-    TcpServerSocket server;
-    QSharedPointer<QMediaPlayer> player;
-    QImage frameImage;
+    TcpServerSocket m_server;
+    QSharedPointer<QMediaPlayer> m_player;
+    QSharedPointer<VideoFrameGrabber> m_grabber;
 };
 #endif // MAINWINDOW_H

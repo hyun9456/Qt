@@ -19,7 +19,7 @@ private slots:
     void onSocketStateChanged(QAbstractSocket::SocketState socketState);
 
 private:
-    QList<QTcpSocket*>  sockets;
+    QList<QSharedPointer<QTcpSocket>> m_sockets;
 };
 
 #endif // TCPSERVERSOCKET_H

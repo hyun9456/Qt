@@ -5,6 +5,7 @@
 #include <QFileDialog>
 #include <QPixmap>
 #include <QDebug>
+#include <QVideoSurfaceFormat>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -18,65 +19,40 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::drawImage(QImage image)
-{
-    QPixmap pix = QPixmap::fromImage(image);
-    int w = ui->label->width();
-    int h = ui->label->height();
-    ui->label->setPixmap(pix.scaled(w, h, Qt::KeepAspectRatio));
-
-    update();
+void MainWindow::paintEvent(QPaintEvent * event){
+    QPainter painter(this);
+    if(nullptr != m_grabber)
+        m_grabber->paint(&painter);
 }
 
-void MainWindow::calcAvgRgb(QImage image)
-{
-    int sum_red = 0;
-    int sum_green = 0;
-    int sum_blue = 0;
-
-    for(int w = 0; w < image.width(); w++) {
-        for(int h = 0; h< image.height(); h++) {
-            QRgb rgb = image.pixel(w,h);
-            sum_red += qRed(rgb);
-            sum_green += qGreen(rgb);
-            sum_blue += qBlue(rgb);
-        }
-    }
-    int size = image.width() * image.height();
-
-    sum_red /= size;
-    sum_green /= size;
-    sum_blue /= size;
-
-    qDebug()<<"("<<sum_red<<", "<<sum_green<<", "<<sum_blue << ")";
-    server.sendData("(" + QByteArray::number(sum_red) + ", "+ QByteArray::number(sum_green) + ", " +QByteArray::number(sum_blue) + ")");
+void MainWindow::sendAvgRgb(QByteArray avgRgb) {
+    m_server.sendData(avgRgb);
 }
 
 void MainWindow::on_pushButton_clicked()
 {
     QString file_path = QFileDialog::getOpenFileName();
     if(false == file_path.isEmpty() ) {
-        player.reset(new QMediaPlayer);
-        VideoFrameGrabber* grabber = new VideoFrameGrabber(this);
-        player->setVideoOutput(grabber);
+        m_player.reset(new QMediaPlayer);
+        m_grabber.reset(new VideoFrameGrabber(this));
+        m_player->setVideoOutput(m_grabber.data());
 
-        connect(grabber, SIGNAL(frameAvailable(QImage)), this, SLOT(drawImage(QImage)));
-        connect(grabber, SIGNAL(frameAvailable(QImage)), this, SLOT(calcAvgRgb(QImage)));
-        player->setMedia(QUrl::fromLocalFile(file_path));
+        connect(m_grabber.data(), &VideoFrameGrabber::frameAvailable, m_grabber.data(), &VideoFrameGrabber::calcAvgRgb);
+        connect(m_grabber.data(), &VideoFrameGrabber::avgRgbAvailable, this, &MainWindow::sendAvgRgb);
+        m_player->setMedia(QUrl::fromLocalFile(file_path));
 
-        player->play();
+        m_player->play();
 
-        qDebug() << player->state();
-
+        qDebug() << m_player->state();
     }
 }
 
 void MainWindow::on_pushButton_run_clicked()
 {
-    server.run(4242);
+    m_server.run(4242);
 }
 
 void MainWindow::on_pushButton_stop_clicked()
 {
-    server.stop();
+    m_server.stop();
 }
