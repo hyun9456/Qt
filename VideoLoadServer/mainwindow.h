@@ -4,6 +4,7 @@
 #include <QMainWindow>
 
 #include <QMediaPlayer>
+#include "tcpserversocket.h"
 
 
 QT_BEGIN_NAMESPACE
@@ -24,8 +25,13 @@ private slots:
     void drawImage(QImage image);
     void calcAvgRgb(QImage image);
 
+    void on_pushButton_run_clicked();
+
+    void on_pushButton_stop_clicked();
+
 private:
     Ui::MainWindow *ui;
+    TcpServerSocket server;
     QSharedPointer<QMediaPlayer> player;
     QImage frameImage;
 };

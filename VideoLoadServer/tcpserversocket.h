@@ -4,20 +4,22 @@
 #include <QTcpServer>
 #include <QTcpSocket>
 
-class TcpServerSocket
+class TcpServerSocket : public QTcpServer
 {
+    Q_OBJECT
 public:
-    TcpServerSocket();
-    void run();
-    void sendData(int data);
+    TcpServerSocket(QObject *parent = nullptr);
+    void run(quint16 port);
+    void sendData(QByteArray block);
     void stop();
-    QString readyData();
+
 private slots:
-    void newConnection();
-    void socketStateChanged(QAbstractSocket::SocketState socketState);
+    void onNewConnection();
+    void onReadyRead();
+    void onSocketStateChanged(QAbstractSocket::SocketState socketState);
+
 private:
-    QTcpServer  server;
-    QList<QSharedPointer<QTcpSocket>>  sockets;
+    QList<QTcpSocket*>  sockets;
 };
 
 #endif // TCPSERVERSOCKET_H

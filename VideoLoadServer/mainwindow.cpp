@@ -49,6 +49,7 @@ void MainWindow::calcAvgRgb(QImage image)
     sum_blue /= size;
 
     qDebug()<<"("<<sum_red<<", "<<sum_green<<", "<<sum_blue << ")";
+    server.sendData("(" + QByteArray::number(sum_red) + ", "+ QByteArray::number(sum_green) + ", " +QByteArray::number(sum_blue) + ")");
 }
 
 void MainWindow::on_pushButton_clicked()
@@ -56,8 +57,7 @@ void MainWindow::on_pushButton_clicked()
     QString file_path = QFileDialog::getOpenFileName();
     if(false == file_path.isEmpty() ) {
         player.reset(new QMediaPlayer);
-        //player->setVideoOutput(ui->videowidget);
-        VideoFrameGrabber* grabber = new VideoFrameGrabber(ui->videowidget, this);
+        VideoFrameGrabber* grabber = new VideoFrameGrabber(this);
         player->setVideoOutput(grabber);
 
         connect(grabber, SIGNAL(frameAvailable(QImage)), this, SLOT(drawImage(QImage)));
@@ -69,4 +69,14 @@ void MainWindow::on_pushButton_clicked()
         qDebug() << player->state();
 
     }
+}
+
+void MainWindow::on_pushButton_run_clicked()
+{
+    server.run(4242);
+}
+
+void MainWindow::on_pushButton_stop_clicked()
+{
+    server.stop();
 }
