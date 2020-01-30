@@ -50,8 +50,9 @@ void TcpServerSocket::onReadyRead()
 {
     QTcpSocket* sender(static_cast<QTcpSocket*>(QObject::sender()));
     QByteArray datas = sender->readAll();
-    for (auto socket : m_sockets) {
-        if (socket != sender)
-            socket->write(QByteArray::fromStdString(sender->peerAddress().toString().toStdString() + ": " + datas.toStdString()));
-    }
+//    for (auto socket : m_sockets) {
+//        if (socket != sender)
+//            socket->write(QByteArray::fromStdString(sender->peerAddress().toString().toStdString() + ": " + datas.toStdString()));
+//    }
+    emit readData(datas);
 }

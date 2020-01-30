@@ -20,6 +20,9 @@ private slots:
 
 private:
     QList<QSharedPointer<QTcpSocket>> m_sockets;
+
+signals:
+    void readData(QByteArray block);
 };
 
 #endif // TCPSERVERSOCKET_H

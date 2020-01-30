@@ -25,11 +25,13 @@ private slots:
     void on_pushButton_stop_clicked();
     void paintEvent(QPaintEvent * event);
     void sendAvgRgb(QByteArray avgRgb);
+    void setAvgRgbMode(QByteArray block);
 
 private:
     Ui::MainWindow *ui;
     TcpServerSocket m_server;
     QSharedPointer<QMediaPlayer> m_player;
     QSharedPointer<VideoFrameGrabber> m_grabber;
+    unsigned int m_avgRgbMode;
 };
 #endif // MAINWINDOW_H

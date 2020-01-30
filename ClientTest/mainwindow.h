@@ -18,9 +18,11 @@ public:
 
 public slots:
     void onReadyRead();
+    void onSendMode();
 
 private:
     Ui::MainWindow *ui;
-    QTcpSocket  _socket;
+    QTcpSocket  m_socket;
+    unsigned int m_avgRgbMode;
 };
 #endif // MAINWINDOW_H

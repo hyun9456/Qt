@@ -29,6 +29,10 @@ void MainWindow::sendAvgRgb(QByteArray avgRgb) {
     m_server.sendData(avgRgb);
 }
 
+void MainWindow::setAvgRgbMode(QByteArray block)
+{
+}
+
 void MainWindow::on_pushButton_clicked()
 {
     QString file_path = QFileDialog::getOpenFileName();
@@ -50,6 +54,7 @@ void MainWindow::on_pushButton_clicked()
 void MainWindow::on_pushButton_run_clicked()
 {
     m_server.run(4242);
+    connect(&m_server, &TcpServerSocket::readData, this, &MainWindow::setAvgRgbMode);
 }
 
 void MainWindow::on_pushButton_stop_clicked()
