@@ -1,4 +1,4 @@
-QT       += core gui network multimedia multimediawidgets
+QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -16,23 +16,17 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    fpsthread.cpp \
     main.cpp \
-    mainwindow.cpp \
-    tcpserversocket.cpp \
-    videoframegrabber.cpp
+    mainwindow.cpp
 
 HEADERS += \
-    fpsthread.h \
-    mainwindow.h \
-    tcpserversocket.h \
-    videoframegrabber.h
+    mainwindow.h
 
 FORMS += \
     mainwindow.ui
 
 TRANSLATIONS += \
-    VideoLoadServer_ko_KR.ts
+    CopyTest_ko_KR.ts
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
