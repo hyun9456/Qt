@@ -5,54 +5,44 @@
 TcpServerSocket::TcpServerSocket(QObject *parent)
     : QTcpServer(parent)
 {
-    connect(this, &TcpServerSocket::newConnection, this, &TcpServerSocket::onNewConnection);
 }
 
 void TcpServerSocket::run(quint16 port)
 {
-    this->listen(QHostAddress::Any, port);
+    if(!this->listen(QHostAddress::Any, port)){
+        qDebug() << "Could not start server";
+    }
+    else {
+        qDebug() << "Listening to port " << port << "...";
+    }
+}
+
+void TcpServerSocket::stop()
+{
+
+    this->close();
 }
 
 void TcpServerSocket::sendData(QByteArray block)
 {
-    for (auto socket : m_sockets) {
-        socket->write(block);
-    }
-}
-void TcpServerSocket::stop()
-{
-    m_sockets.clear();
-    this->close();
+    emit dataReady(block);
 }
 
-void TcpServerSocket::onNewConnection()
+void TcpServerSocket::incomingConnection(qintptr socketDescriptor)
 {
-    QSharedPointer<QTcpSocket> clientSocket(this->nextPendingConnection());
-    connect(clientSocket.data(), &QTcpSocket::readyRead, this, &TcpServerSocket::onReadyRead);
-    connect(clientSocket.data(), &QTcpSocket::stateChanged, this, &TcpServerSocket::onSocketStateChanged);
+    // We have a new connection
+    qDebug() << socketDescriptor << " Connecting...";
 
-    m_sockets.push_back(clientSocket);
-    for (auto socket : m_sockets) {
-        socket->write(QByteArray::fromStdString(clientSocket->peerAddress().toString().toStdString() + " connected to server !\n"));
-    }
+    // Every new connection will be run in a newly created thread
+    ServerThread *thread = new ServerThread(socketDescriptor, this, 1);
+
+    // connect signal/slot
+    // once a thread is not needed, it will be beleted later
+    connect(this, &TcpServerSocket::dataReady, thread, &ServerThread::setData);
+    connect(thread, &QThread::finished, thread, &QThread::deleteLater);
+
+    thread->start();
+
+    m_threadList.push_back(QSharedPointer<ServerThread>(thread));
 }
 
-void TcpServerSocket::onSocketStateChanged(QAbstractSocket::SocketState socketState)
-{
-    if (socketState == QAbstractSocket::UnconnectedState)
-    {
-        QTcpSocket* sender = static_cast<QTcpSocket*>(QObject::sender());
-        m_sockets.removeOne(static_cast<QSharedPointer<QTcpSocket>>(sender));
-    }
-}
-
-void TcpServerSocket::onReadyRead()
-{
-    QTcpSocket* sender(static_cast<QTcpSocket*>(QObject::sender()));
-    QByteArray datas = sender->readAll();
-//    for (auto socket : m_sockets) {
-//        if (socket != sender)
-//            socket->write(QByteArray::fromStdString(sender->peerAddress().toString().toStdString() + ": " + datas.toStdString()));
-//    }
-    emit readData(datas);
-}

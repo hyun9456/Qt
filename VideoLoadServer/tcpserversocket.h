@@ -3,6 +3,7 @@
 
 #include <QTcpServer>
 #include <QTcpSocket>
+#include "serverthread.h"
 
 class TcpServerSocket : public QTcpServer
 {
@@ -14,15 +15,14 @@ public:
     void stop();
 
 private slots:
-    void onNewConnection();
-    void onReadyRead();
-    void onSocketStateChanged(QAbstractSocket::SocketState socketState);
+
+protected:
+    void incomingConnection(qintptr socketDescriptor);
 
 private:
-    QList<QSharedPointer<QTcpSocket>> m_sockets;
-
+    QList<QSharedPointer<ServerThread>> m_threadList;
 signals:
-    void readData(QByteArray block);
+    void dataReady(QByteArray block);
 };
 
 #endif // TCPSERVERSOCKET_H

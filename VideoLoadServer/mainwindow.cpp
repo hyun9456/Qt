@@ -25,13 +25,25 @@ void MainWindow::paintEvent(QPaintEvent * event){
         m_grabber->paint(&painter);
 }
 
-void MainWindow::sendAvgRgb(QByteArray avgRgb) {
+void MainWindow::setAvgRgb(QByteArray avgRgb) {
     m_server.sendData(avgRgb);
 }
 
-void MainWindow::setAvgRgbMode(QByteArray block)
-{
+
+void MainWindow::setGrabberAvgRgbMode(QByteArray block) {
+    if(nullptr != m_grabber) {
+        unsigned int avgRgbMode = 0;
+        if(block.compare("mode : 0") == 0) {
+            avgRgbMode = 0;
+        } else if (block.compare("mode : 1") == 0) {
+            avgRgbMode = 1;
+        } else if (block.compare("mode : 2") == 0) {
+            avgRgbMode = 2;
+        }
+        m_grabber->setAvgRgbMode(avgRgbMode);
+    }
 }
+
 
 void MainWindow::on_pushButton_clicked()
 {
@@ -42,10 +54,11 @@ void MainWindow::on_pushButton_clicked()
         m_player->setVideoOutput(m_grabber.data());
 
         connect(m_grabber.data(), &VideoFrameGrabber::frameAvailable, m_grabber.data(), &VideoFrameGrabber::calcAvgRgb);
-        connect(m_grabber.data(), &VideoFrameGrabber::avgRgbAvailable, this, &MainWindow::sendAvgRgb);
+        connect(m_grabber.data(), &VideoFrameGrabber::avgRgbAvailable, this, &MainWindow::setAvgRgb);
         m_player->setMedia(QUrl::fromLocalFile(file_path));
 
         m_player->play();
+        m_avgRgb.setNum(0);
 
         qDebug() << m_player->state();
     }
@@ -54,7 +67,6 @@ void MainWindow::on_pushButton_clicked()
 void MainWindow::on_pushButton_run_clicked()
 {
     m_server.run(4242);
-    connect(&m_server, &TcpServerSocket::readData, this, &MainWindow::setAvgRgbMode);
 }
 
 void MainWindow::on_pushButton_stop_clicked()

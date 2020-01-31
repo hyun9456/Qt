@@ -16,15 +16,15 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    fpsthread.cpp \
     main.cpp \
     mainwindow.cpp \
+    serverthread.cpp \
     tcpserversocket.cpp \
     videoframegrabber.cpp
 
 HEADERS += \
-    fpsthread.h \
     mainwindow.h \
+    serverthread.h \
     tcpserversocket.h \
     videoframegrabber.h
 

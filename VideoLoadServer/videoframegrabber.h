@@ -25,6 +25,7 @@ public:
 
     void paint(QPainter *painter);
     void calcAvgRgb(QImage frame);
+    void setAvgRgbMode(unsigned int avgRgbMode);
 
 private:
     QWidget *m_widget;
@@ -33,6 +34,7 @@ private:
     QSize m_imageSize;
     QRect m_sourceRect;
     QVideoFrame m_currentFrame;
+    unsigned int m_avgRgbMode;
 
 signals:
     void frameAvailable(QImage frame);

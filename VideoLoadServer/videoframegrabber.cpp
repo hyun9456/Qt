@@ -172,6 +172,11 @@ void VideoFrameGrabber::calcAvgRgb(QImage frame)
 
     QByteArray avgRgb("(" + QByteArray::number(avgRed) + ", "+ QByteArray::number(avgGreen) + ", "+ QByteArray::number(avgBlue) + ")");
 
-    qDebug() << avgRgb;
+    //qDebug() << avgRgb;
     emit avgRgbAvailable(avgRgb);
+}
+
+void VideoFrameGrabber::setAvgRgbMode(unsigned int avgRgbMode)
+{
+    m_avgRgbMode = avgRgbMode;
 }

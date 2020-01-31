@@ -4,8 +4,10 @@
 #include <QMainWindow>
 
 #include <QMediaPlayer>
+#include <QMutex>
 #include "tcpserversocket.h"
 #include "videoframegrabber.h"
+#include "serverthread.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -24,14 +26,16 @@ private slots:
     void on_pushButton_run_clicked();
     void on_pushButton_stop_clicked();
     void paintEvent(QPaintEvent * event);
-    void sendAvgRgb(QByteArray avgRgb);
-    void setAvgRgbMode(QByteArray block);
+    void setAvgRgb(QByteArray avgRgb);
+    void setGrabberAvgRgbMode(QByteArray block);
 
 private:
     Ui::MainWindow *ui;
+    QByteArray m_avgRgb;
+    QMutex m_mutex;
     TcpServerSocket m_server;
     QSharedPointer<QMediaPlayer> m_player;
     QSharedPointer<VideoFrameGrabber> m_grabber;
-    unsigned int m_avgRgbMode;
+    //QSharedPointer<FPSThread> m_fpsThread;
 };
 #endif // MAINWINDOW_H
