@@ -1,20 +1,20 @@
 #include "serverthread.h"
 
-ServerThread::ServerThread(qintptr ID, QObject *parent, unsigned long FPS)
-    : QThread(parent),
-      m_socketDescriptor(ID),
+ServerThread::ServerThread(qintptr ID, unsigned long FPS)
+    : m_socketDescriptor(ID),
       m_FPS(FPS)
 {
-    m_threadTimer.reset(new QTimer()); //타이머 생성
-    connect(m_threadTimer.data(), &QTimer::timeout, this, &ServerThread::timerHit, Qt::DirectConnection);
-    m_threadTimer->moveToThread(this);
-    m_block = "";
+    moveToThread(this);
 }
 
 void ServerThread::run()
 {
     // thread starts here
-    qDebug() << " Thread started";
+    qDebug() << " Thread started" << this->currentThreadId();
+
+    m_threadTimer.reset(new QTimer()); //타이머 생성
+    connect(m_threadTimer.data(), &QTimer::timeout, this, &ServerThread::timerHit);
+    m_block = "";
 
     m_socket.reset(new QTcpSocket());
 
@@ -32,21 +32,27 @@ void ServerThread::run()
 
     connect(m_socket.data(), &QTcpSocket::readyRead, this, &ServerThread::readyRead, Qt::DirectConnection);
     connect(m_socket.data(), &QTcpSocket::disconnected, this, &ServerThread::disconnected);
+    //connect(this, &ServerThread::stopRequested, this, &ServerThread::disconnected);
 
     // We'll have multiple clients, we want to know which is which
     qDebug() << m_socketDescriptor << " Client connected";
 
-//    connect(m_threadTimer, &QTimer::timeout, this, &ServerThread::timerHit, Qt::DirectConnection);
-//    timer.setInterval(1000/m_FPS);
-//    timer.moveToThread(this);
-//    timer.start();
-//    exec();
-//    timer.stop();
     m_threadTimer->start(1000/m_FPS);
     exec();
     m_threadTimer->stop();
 }
 
+void ServerThread::stop()
+{
+    if(currentThread() != this)
+    {
+        QMetaObject::invokeMethod(this, "stop", Qt::QueuedConnection);
+    }
+    else
+    {
+        quit();
+    }
+}
 
 void ServerThread::readyRead()
 {
@@ -55,24 +61,25 @@ void ServerThread::readyRead()
 
     // will write on server side window
     qDebug() << m_socketDescriptor << " Data in: " << Data;
-
-    //m_socket->write(Data);
+    emit readyReadData(Data);
 }
 
 void ServerThread::disconnected()
 {
-    qDebug() << m_socketDescriptor << " Disconnected";
+    if(nullptr != m_socket) {
+        qDebug() << m_socketDescriptor << " Disconnected";
 
-    m_socket->deleteLater();
-
-    exit(0);
+        stop();
+    }
 }
 
 void ServerThread::timerHit()
 {
+    QMutexLocker locker(&m_mutex);
     m_socket->write(m_block);
 }
 void ServerThread::setData(QByteArray block)
 {
+    QMutexLocker locker(&m_mutex);
     m_block = block;
 }

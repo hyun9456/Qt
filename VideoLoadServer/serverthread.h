@@ -5,18 +5,23 @@
 #include <QTcpSocket>
 #include <QDebug>
 #include <QTimer>
+#include <QMutex>
 
 class ServerThread : public QThread
 {
     Q_OBJECT
 public:
-    ServerThread(qintptr ID, QObject *parent = 0, unsigned long FPS = 60);
-    void run();
+    ServerThread(qintptr ID, unsigned long FPS = 60);
 
 signals:
     void error(QTcpSocket::SocketError socketerror);
+    void readyReadData(QByteArray Data);
+
+protected:
+    void run();
 
 public slots:
+    void stop();
     void readyRead();
     void disconnected();
     void timerHit();
@@ -28,6 +33,8 @@ private:
     unsigned long m_FPS;
     QByteArray m_block;
     QSharedPointer<QTimer> m_threadTimer;
+
+    QMutex m_mutex;
 };
 
 #endif // SERVERTHREAD_H

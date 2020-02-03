@@ -179,4 +179,5 @@ void VideoFrameGrabber::calcAvgRgb(QImage frame)
 void VideoFrameGrabber::setAvgRgbMode(unsigned int avgRgbMode)
 {
     m_avgRgbMode = avgRgbMode;
+    qDebug() << "change mode : " <<m_avgRgbMode;
 }
