@@ -5,6 +5,7 @@ VideoFrameGrabber::VideoFrameGrabber(QWidget *widget, QObject *parent)
     : QAbstractVideoSurface(parent)
     , m_widget(widget)
     , m_imageFormat(QImage::Format_Invalid)
+    , m_rgbMode(0)
 {
 }
 
@@ -150,7 +151,7 @@ void VideoFrameGrabber::paint(QPainter *painter)
     }
 }
 
-void VideoFrameGrabber::calcAvgRgb(QImage frame)
+QByteArray VideoFrameGrabber::calcAvgRgb(QImage frame)
 {
     double avgRed = 0;
     double avgGreen = 0;
@@ -172,12 +173,63 @@ void VideoFrameGrabber::calcAvgRgb(QImage frame)
 
     QByteArray avgRgb("(" + QByteArray::number(avgRed) + ", "+ QByteArray::number(avgGreen) + ", "+ QByteArray::number(avgBlue) + ")");
 
-    //qDebug() << avgRgb;
-    emit avgRgbAvailable(avgRgb);
+    return avgRgb;
 }
 
-void VideoFrameGrabber::setAvgRgbMode(unsigned int avgRgbMode)
+QByteArray VideoFrameGrabber::calcMedianRgb(QImage frame)
 {
-    m_avgRgbMode = avgRgbMode;
-    qDebug() << "change mode : " <<m_avgRgbMode;
+    int list_size = frame.width() * frame.height();
+    //qDebug() << list_size;
+
+    QVector<int> R_List(list_size), G_List(list_size), B_List(list_size);
+
+    for(int w = 0; w < frame.width(); w++) {
+        for(int h = 0; h< frame.height(); h++) {
+            QRgb rgb = frame.pixel(w,h);
+            R_List.append(qRed(rgb));
+            G_List.append(qGreen(rgb));
+            B_List.append(qBlue(rgb));
+        }
+    }
+    unsigned int median_pos = R_List.size() / 2;
+    qSort(R_List);
+    qSort(G_List);
+    qSort(B_List);
+
+    QByteArray MedianRgb("(" + QByteArray::number(R_List[median_pos]) + ", "+ QByteArray::number(G_List[median_pos]) + ", "+ QByteArray::number(B_List[median_pos]) + ")");
+
+    return MedianRgb;
+}
+
+
+QByteArray VideoFrameGrabber::calcCenterRgb(QImage frame)
+{
+    int mid_w = frame.width() / 2, mid_h = frame.height() / 2;
+    QRgb rgb = frame.pixel(mid_w, mid_h);
+    int r = qRed(rgb), g = qGreen(rgb), b = qBlue(rgb);
+
+    QByteArray CenterRgb("(" + QByteArray::number(r) + ", "+ QByteArray::number(g) + ", "+ QByteArray::number(b) + ")");
+
+    return CenterRgb;
+}
+
+
+void VideoFrameGrabber::calcRgb(QImage frame)
+{
+    QByteArray rgbValue;
+    if(0 == m_rgbMode) {
+        rgbValue = calcAvgRgb(frame);
+    } else if(1 == m_rgbMode) {
+        rgbValue = calcMedianRgb(frame);
+    } else if(2 == m_rgbMode) {
+        rgbValue = calcCenterRgb(frame);
+    }
+    //qDebug() << rgbValue;
+    emit rgbAvailable(rgbValue);
+}
+
+void VideoFrameGrabber::setRgbMode(unsigned int rgbMode)
+{
+    m_rgbMode = rgbMode;
+    qDebug() << "change mode : " <<m_rgbMode;
 }

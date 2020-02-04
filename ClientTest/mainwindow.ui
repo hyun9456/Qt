@@ -14,12 +14,12 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
-      <x>160</x>
+      <x>120</x>
       <y>60</y>
-      <width>91</width>
+      <width>155</width>
       <height>131</height>
      </rect>
     </property>
@@ -27,21 +27,21 @@
      <item>
       <widget class="QRadioButton" name="radioButton_mode0">
        <property name="text">
-        <string>Mode 0</string>
+        <string>Mode 0 (Average)</string>
        </property>
       </widget>
      </item>
      <item>
       <widget class="QRadioButton" name="radioButton_mode1">
        <property name="text">
-        <string>Mode 1</string>
+        <string>Mode 1 (Median)</string>
        </property>
       </widget>
      </item>
      <item>
       <widget class="QRadioButton" name="radioButton_mode2">
        <property name="text">
-        <string>Mode 2</string>
+        <string>Mode 2 (Center)</string>
        </property>
       </widget>
      </item>

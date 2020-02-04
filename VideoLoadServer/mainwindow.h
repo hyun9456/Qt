@@ -27,7 +27,7 @@ private slots:
     void on_pushButton_stop_clicked();
     void paintEvent(QPaintEvent * event);
     void setAvgRgb(QByteArray avgRgb);
-    void setGrabberAvgRgbMode(QByteArray block);
+    void setGrabberRgbMode(QByteArray block);
 
 private:
     Ui::MainWindow *ui;

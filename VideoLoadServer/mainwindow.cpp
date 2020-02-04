@@ -15,8 +15,8 @@ MainWindow::MainWindow(QWidget *parent)
     m_player.reset(new QMediaPlayer);
     m_grabber.reset(new VideoFrameGrabber(this));
     m_player->setVideoOutput(m_grabber.data());
-    connect(m_grabber.data(), &VideoFrameGrabber::frameAvailable, m_grabber.data(), &VideoFrameGrabber::calcAvgRgb);
-    connect(m_grabber.data(), &VideoFrameGrabber::avgRgbAvailable, this, &MainWindow::setAvgRgb);
+    connect(m_grabber.data(), &VideoFrameGrabber::frameAvailable, m_grabber.data(), &VideoFrameGrabber::calcRgb);
+    connect(m_grabber.data(), &VideoFrameGrabber::rgbAvailable, this, &MainWindow::setAvgRgb);
 }
 
 MainWindow::~MainWindow()
@@ -35,17 +35,17 @@ void MainWindow::setAvgRgb(QByteArray avgRgb) {
 }
 
 
-void MainWindow::setGrabberAvgRgbMode(QByteArray block) {
+void MainWindow::setGrabberRgbMode(QByteArray block) {
     if(nullptr != m_grabber) {
-        unsigned int avgRgbMode = 0;
+        unsigned int rgbMode = 0;
         if(block.compare("Mode : 0") == 0) {
-            avgRgbMode = 0;
+            rgbMode = 0;
         } else if (block.compare("Mode : 1") == 0) {
-            avgRgbMode = 1;
+            rgbMode = 1;
         } else if (block.compare("Mode : 2") == 0) {
-            avgRgbMode = 2;
+            rgbMode = 2;
         }
-        m_grabber->setAvgRgbMode(avgRgbMode);
+        m_grabber->setRgbMode(rgbMode);
     }
 }
 
@@ -66,7 +66,7 @@ void MainWindow::on_pushButton_clicked()
 void MainWindow::on_pushButton_run_clicked()
 {
     m_server.run(4242);
-    connect(&m_server, &TcpServerSocket::readyReadData, this, &MainWindow::setGrabberAvgRgbMode);
+    connect(&m_server, &TcpServerSocket::readyReadData, this, &MainWindow::setGrabberRgbMode);
 }
 
 void MainWindow::on_pushButton_stop_clicked()

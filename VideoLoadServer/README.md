@@ -14,7 +14,7 @@ Qt¿¡¼­ Video ¿µ»óÀ» ºÒ·¯µé¿© TCP Åë½ÅÀ» ÅëÇØ Client·Î ÀÏÁ¤ FPS·Î FrameÀÇ Æò±ÕÀûÀ
 
 ## 3. Server Thread
 
-**QThread** Å¬·¡½º¸¦ »ó¼Ó¹Þ¾Æ ¸¸µç Å¬·¡½º·Î Client¿Í ¿¬°áµÈ SocketÀ» °¡Áö°í ÀÖÀ¸¸ç **QTimer**¸¦ ÅëÇØ msec´ÜÀ§ÀÇ ÀÏÁ¤ FPS·Î m_block¿¡ ÀúÀåµÈ µ¥ÀÌÅÍ¸¦ Àü¼ÛÇÏ´Â ¿ªÇÒ
+**QThread** Å¬·¡½º¸¦ »ó¼Ó¹Þ¾Æ ¸¸µç Å¬·¡½º·Î Client¿Í ¿¬°áµÈ SocketÀ» °¡Áö°í ÀÖÀ¸¸ç **QTimer**¸¦ ÅëÇØ msec´ÜÀ§ÀÇ ÀÏÁ¤ FPS·Î *m_block*¿¡ ÀúÀåµÈ µ¥ÀÌÅÍ¸¦ Àü¼ÛÇÏ´Â ¿ªÇÒ
 
 ÂüÁ¶ : [https://www.bogotobogo.com/Qt/Qt5_QTcpServer_Multithreaded_Client_Server.php](https://www.bogotobogo.com/Qt/Qt5_QTcpServer_Multithreaded_Client_Server.php)
 
@@ -23,9 +23,8 @@ Qt¿¡¼­ Video ¿µ»óÀ» ºÒ·¯µé¿© TCP Åë½ÅÀ» ÅëÇØ Client·Î ÀÏÁ¤ FPS·Î FrameÀÇ Æò±ÕÀûÀ
 * ¿µ»ó Àç»ý½Ã codec °ü·Ã ¿À·ù
 
 		DirectShowPlayerService::doRender: Unresolved error code 80040266  
-	>  Codec ¼³Ä¡ÇÏ¿© ÇØ°á
-
-	ÂüÁ¶ : [http://www.qt-dev.com/board.php?board=qnaboard&command=body&no=604](http://www.qt-dev.com/board.php?board=qnaboard&command=body&no=604)
+	> Codec ¼³Ä¡ÇÏ¿© ÇØ°á  
+	> ÂüÁ¶ : [http://www.qt-dev.com/board.php?board=qnaboard&command=body&no=604](http://www.qt-dev.com/board.php?board=qnaboard&command=body&no=604)
 * Head ÆÄÀÏ¿¡ Q_OBJECT Ãß°¡ ÈÄ ¿À·ù
 
 		tcpserversocket.obj:-1: error: LNK2001: "public: virtual struct QMetaObject const * __cdecl TcpServerSocket::metaObject(void)const " (?metaObject@TcpServerSocket@@UEBAPEBUQMetaObject@@XZ) ¿ÜºÎ ±âÈ£¸¦ È®ÀÎÇÒ ¼ö ¾ø½À´Ï´Ù.
@@ -40,13 +39,11 @@ Qt¿¡¼­ Video ¿µ»óÀ» ºÒ·¯µé¿© TCP Åë½ÅÀ» ÅëÇØ Client·Î ÀÏÁ¤ FPS·Î FrameÀÇ Æò±ÕÀûÀ
 		[
 		    X=MainWindow
 		]
-	> QSharedPointer<T>¿¡¼­ T¿¡ ¸Â´Â Çü½ÄÀ¸·Î »ý¼º ÈÄ ÃÊ±âÈ­
-
-	ex) QSharedPointer<VideoFrameGrabber> grabber(new VideoFrameGrabber(this));
+	> QSharedPointer<T>¿¡¼­ T¿¡ ¸Â´Â Çü½ÄÀ¸·Î »ý¼º ÈÄ ÃÊ±âÈ­   
+	> ex) QSharedPointer<VideoFrameGrabber> grabber(new VideoFrameGrabber(this));
 
 * ´Ù¸¥ Thread °£ ÇÔ¼ö È£Ãâ ¹®Á¦
 
 		ASSERT failure in QCoreApplication::sendEvent: "Cannot send events to objects owned by a different thread. Current thread 0x0x1f1ff7bc100. Receiver '' (of type 'QNativeSocketEngine') was created in thread 0x0x1f1829ec8f0", file kernel\qcoreapplication.cpp, line 578
-	> QMetaObject::invokeMethod »ç¿ëÇÏ¿© ÇØ°á
-
-	ÂüÁ¶ : [https://thesmithfam.org/blog/2010/02/07/talking-to-qt-threads/](https://thesmithfam.org/blog/2010/02/07/talking-to-qt-threads/)
+	> QMetaObject::invokeMethod »ç¿ëÇÏ¿© ÇØ°á  
+	> ÂüÁ¶ : [https://thesmithfam.org/blog/2010/02/07/talking-to-qt-threads/](https://thesmithfam.org/blog/2010/02/07/talking-to-qt-threads/)

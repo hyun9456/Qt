@@ -50,6 +50,7 @@ void ServerThread::stop()
     }
     else
     {
+        m_socket->close();
         quit();
     }
 }

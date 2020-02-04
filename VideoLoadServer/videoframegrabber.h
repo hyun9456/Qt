@@ -24,21 +24,26 @@ public:
     void updateVideoRect();
 
     void paint(QPainter *painter);
-    void calcAvgRgb(QImage frame);
-    void setAvgRgbMode(unsigned int avgRgbMode);
+    void calcRgb(QImage frame);
+
+    void setRgbMode(unsigned int rgbMode);
 
 private:
+    QByteArray calcAvgRgb(QImage frame);
+    QByteArray calcMedianRgb(QImage frame);
+    QByteArray calcCenterRgb(QImage frame);
+
     QWidget *m_widget;
     QImage::Format m_imageFormat;
     QRect m_targetRect;
     QSize m_imageSize;
     QRect m_sourceRect;
     QVideoFrame m_currentFrame;
-    unsigned int m_avgRgbMode;
+    unsigned int m_rgbMode;
 
 signals:
     void frameAvailable(QImage frame);
-    void avgRgbAvailable(QByteArray avgRgb);
+    void rgbAvailable(QByteArray avgRgb);
 };
 
 #endif // VIDEOFRAMEGRABBER_H

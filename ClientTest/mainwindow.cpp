@@ -12,11 +12,11 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     ui->radioButton_mode0->click();
+    m_socket.connectToHost(QHostAddress("127.0.0.1"), 4242);
+    connect(&m_socket, &QTcpSocket::readyRead, this, &MainWindow::onReadyRead);
     connect(ui->radioButton_mode0, &QRadioButton::clicked, this, &MainWindow::onSendMode);
     connect(ui->radioButton_mode1, &QRadioButton::clicked, this, &MainWindow::onSendMode);
     connect(ui->radioButton_mode2, &QRadioButton::clicked, this, &MainWindow::onSendMode);
-    m_socket.connectToHost(QHostAddress("127.0.0.1"), 4242);
-    connect(&m_socket, &QTcpSocket::readyRead, this, &MainWindow::onReadyRead);
 }
 
 MainWindow::~MainWindow()
@@ -28,7 +28,7 @@ void MainWindow::onReadyRead()
 {
     QByteArray datas = m_socket.readAll();
     qDebug() << datas;
-    m_socket.write(QByteArray("ok !\n"));
+    //m_socket.write(QByteArray("ok !\n"));
 }
 
 void MainWindow::onSendMode()
