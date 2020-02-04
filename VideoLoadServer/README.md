@@ -3,7 +3,8 @@ Qt에서 Video 영상을 불러들여 TCP 통신을 통해 Client로 일정 FPS로 Frame의 평균적�
 
 ## 1. Video Frame Grabber
 
-**QAbstructVideoSurface** 클래스를 상속받아 만든 클래스로 **QMediaPlayer**와 연결하여 영상의 각 Frame 별로의 처리를 도와주는 역할
+**QAbstructVideoSurface** 클래스를 상속받아 만든 클래스로 **QMediaPlayer**와 연결하여 영상의 각 Frame 별로의 처리를 도와주는 역할  
+*m_rgbMode*에 따라 0일 경우 Average, 1일 경우 Median, 2일 경우 Center RGB 값을 반환함
 
 참조 : [https://forum.qt.io/topic/63206/trying-to-capture-qimage-of-video-frame](https://forum.qt.io/topic/63206/trying-to-capture-qimage-of-video-frame)
 [https://stackoverflow.com/questions/37724602/how-to-save-a-frame-using-qmediaplayer](https://stackoverflow.com/questions/37724602/how-to-save-a-frame-using-qmediaplayer)
